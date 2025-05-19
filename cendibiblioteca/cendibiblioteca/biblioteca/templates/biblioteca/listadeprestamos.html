@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Préstamos</title>
+</head>
+<body>
+    <h1>Biblioteca CENDI</h1>
+    <h2>Listado de Préstamos</h2>
+    <ul>
+        {% for prestamo in prestamos %}
+            <li>
+                <strong>Alumno:</strong> {{ prestamo.alumno.nombre_completo }} - 
+                <strong>Libro:</strong> {{ prestamo.libro.titulo }} - 
+                <strong>Fecha préstamo:</strong> {{ prestamo.fecha_prestamo }} - 
+                <strong>Fecha devolución:</strong> {{ prestamo.fecha_devolucion|default:"Pendiente" }}
+            </li>
+        {% empty %}
+            <li>No hay préstamos registrados.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
