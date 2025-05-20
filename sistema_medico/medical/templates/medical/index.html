@@ -1,0 +1,43 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}Inicio - Sistema Médico{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12 text-center mb-4">
+            <h1>Bienvenido al Sistema Médico</h1>
+            <p class="lead">Un sistema simple para gestionar consultas médicas</p>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if user.is_authenticated %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Mis Consultas</h5>
+                        <p class="card-text">Accede a todas tus consultas médicas.</p>
+                        <a href="{% url 'consulta_list' %}" class="btn btn-primary">Ver Consultas</a>
+                    </div>
+                </div>
+            </div>
+            
+            {% if user.rol == 'medico' or user.is_staff %}
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Nueva Consulta</h5>
+                            <p class="card-text">Crea una nueva consulta médica.</p>
+                            <a href="{% url 'consulta_new' %}" class="btn btn-primary">Crear Consulta</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="col-md-12 text-center">
+                <p>Debes iniciar sesión para acceder a las funciones del sistema.</p>
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Iniciar Sesión</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

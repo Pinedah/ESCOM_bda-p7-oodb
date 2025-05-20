@@ -1,0 +1,81 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}Detalle de Consulta - Sistema Médico{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Detalle de Consulta</h2>
+        <a href="{% url 'consulta_list' %}" class="btn btn-secondary">Volver a la lista</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Información de la Consulta</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Fecha:</strong> {{ consulta.fecha|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Paciente:</strong> {{ consulta.paciente }}</p>
+                    <p><strong>Médico:</strong> {{ consulta.medico }}</p>
+                    <p><strong>Duración:</strong> {% if consulta.duracion %}{{ consulta.duracion }} minutos{% else %}No especificada{% endif %}</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    {% if user.rol == 'medico' and consulta.medico.usuario == user or user.is_staff %}
+                        <a href="{% url 'consulta_edit' pk=consulta.pk %}" class="btn btn-warning">Editar Consulta</a>
+                    {% endif %}
+                    {% if user.is_staff %}
+                        <a href="{% url 'consulta_delete' pk=consulta.pk %}" class="btn btn-danger">Eliminar Consulta</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Detalles Médicos</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <h5>Síntomas:</h5>
+                <p>{{ consulta.sintomas|linebreaks|default:"No se registraron síntomas." }}</p>
+            </div>
+            <div class="mb-3">
+                <h5>Diagnóstico:</h5>
+                <p>{{ consulta.diagnostico|linebreaks|default:"Sin diagnóstico registrado." }}</p>
+            </div>
+            <div class="mb-3">
+                <h5>Observaciones:</h5>
+                <p>{{ consulta.observaciones|linebreaks|default:"No hay observaciones adicionales." }}</p>
+            </div>
+        </div>
+    </div>
+
+    {% if receta %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4>Receta Médica</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h5>Medicamentos:</h5>
+                    <p>{{ receta.medicamentos|linebreaks }}</p>
+                </div>
+                <div class="mb-3">
+                    <h5>Indicaciones:</h5>
+                    <p>{{ receta.indicaciones|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {% if user.rol == 'medico' and consulta.medico.usuario == user %}
+            <div class="text-center mb-4">
+                <p>No hay receta asociada a esta consulta.</p>
+                <a href="{% url 'receta_add' consulta_id=consulta.pk %}" class="btn btn-success">Añadir Receta</a>
+            </div>
+        {% else %}
+            <div class="alert alert-info">Esta consulta no tiene una receta asociada.</div>
+        {% endif %}
+    {% endif %}
+{% endblock %}
