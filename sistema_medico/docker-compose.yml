@@ -1,0 +1,29 @@
+services:
+  web:
+    build: .
+    restart: always
+    volumes:
+      - ./:/app
+      - static_volume:/app/staticfiles
+      - sqlite_data:/app/db  # Volume for SQLite data
+    env_file:
+      - ./.env
+    ports:
+      - "8000:8000"
+    # Comando para producción (usa este cuando estés listo para producción)
+    # command: >
+    #  sh -c "mkdir -p /app/staticfiles &&
+    #         chmod -R 777 /app/staticfiles &&
+    #         python manage.py migrate &&
+    #         python manage.py collectstatic --no-input &&
+    #         gunicorn sistema_medico.wsgi:application --bind 0.0.0.0:8000"
+    # Comando para desarrollo
+    command: >
+      sh -c "mkdir -p /app/staticfiles &&
+             chmod -R 777 /app/staticfiles &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+volumes:
+  static_volume:
+  sqlite_data:  # Persistent volume for SQLite database
