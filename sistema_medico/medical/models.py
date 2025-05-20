@@ -1,6 +1,36 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils import timezone
+
+
+class UsuarioManager(UserManager):
+    """
+    Manager personalizado para Usuario que no requiere username para create_superuser
+    """
+    def _create_user(self, email, password, **extra_fields):
+        if not email:
+            raise ValueError("El Email debe ser establecido")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", False)
+        extra_fields.setdefault("is_superuser", False)
+        return self._create_user(email, password, **extra_fields)
+
+    def create_superuser(self, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self._create_user(email, password, **extra_fields)
 
 
 class Usuario(AbstractUser):
@@ -20,12 +50,14 @@ class Usuario(AbstractUser):
     # Agregamos campos según nuestra especificación
     nombre = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
-    fecha_nacimiento = models.DateField(null=True)
+    fecha_nacimiento = models.DateField(null=True, blank=True)  # Hacemos este campo opcional
     telefono = models.CharField(max_length=15, blank=True, null=True)
-    rol = models.CharField(max_length=15, choices=ROLES)
+    rol = models.CharField(max_length=15, choices=ROLES, default='administrador')  # Valor por defecto
+    
+    objects = UsuarioManager()
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['nombre', 'rol']
+    REQUIRED_FIELDS = ['nombre']  # Eliminamos 'rol' de los campos requeridos
     
     def __str__(self):
         return f"{self.nombre} ({self.get_rol_display()})"
