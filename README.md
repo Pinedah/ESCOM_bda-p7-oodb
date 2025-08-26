@@ -13,7 +13,7 @@ Para ejecutar esta aplicación, necesitas:
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/bda-p7-oodb.git
+   git clone https://github.com/Pinedah/bda-p7-oodb.git
    cd bda-p7-oodb/sistema_medico
    ```
 
